@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Add your CSS file -->
+</head>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 20px;
+    text-align: center;
+}
+
+h2 {
+    color: #333;
+}
+
+#cartItems {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 500px;
+}
+
+.cart-item img {
+    border-radius: 8px;
+    margin-right: 15px;
+}
+
+.cart-item h3 {
+    font-size: 16px;
+    margin: 0;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.cart-item p {
+    font-size: 14px;
+    margin: 5px 0;
+    color: #555;
+}
+
+.cart-item a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #cc0000;
+}
+
+#clearCart {
+    background-color: #dc3545;
+    font-weight: bold;
+    padding: 10px 15px;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+#clearCart:hover {
+    background-color: #00008B;
+    color : white;
+}
+   .view-btn {
+    display: inline-block;
+    background-color: white; /* White button */
+    color: black; /* Black text */
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    border: 2px solid black; /* Black border */
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.view-btn:hover {
+    background-color: #00008B; /* Black background on hover */
+    color: white; /* White text on hover */
+}
+
+
+
+    .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+         .btn-custom {
+            background-color: white;   /* Default White Background */
+            color: black;              /* Black Text */
+            border: 2px solid black;   /* Black Border */
+            padding: 10px 20px;        /* Padding for better size */
+            font-size: 18px;           /* Font Size */
+            cursor: pointer;           /* Pointer Cursor */
+            transition: all 0.3s ease-in-out; /* Smooth Transition */
+        }
+
+         .btn-custom:hover {
+             background-color: #00008B;  /* Blue Background on Hover */
+             color: white;            /* White Text on Hover */
+             border-color: blue;      /* Blue Border on Hover */
+        }
+
+</style>
+
+<body>
+    <div class="btn-container">
+            <a href="main" class="btn btn-custom btn-lg">Back to Main Page</a>
+            <a href="index2" class="btn btn-custom btn-lg">Click for Trending Items</a>
+        </div>
+
+    <h2>Your Shopping Cart</h2>
+    <div id="cartItems"></div>
+
+    <button id="clearCart">Clear Cart</button>
+
+    <script>
+        function displayCart() {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let cartItemsDiv = document.getElementById("cartItems");
+            cartItemsDiv.innerHTML = "";
+
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = "<p>Your cart is empty.</p>";
+                return;
+            }
+
+           cart.forEach((product, index) => {
+    cartItemsDiv.innerHTML += `
+        <div class="cart-item">
+            <img src="${product.image}" alt="${product.name}" width="100">
+            <h3>${product.name}</h3>
+            <p><strong>Price:</strong> ₹${product.price}</p>
+            <a href="${product.url}" target="_blank" class="view-btn">View Product</a>
+            <button class="remove-item" data-index="${index}">Remove</button>
+        </div>
+    `;
+});
+
+
+
+            // Attach event listeners to remove buttons
+            document.querySelectorAll(".remove-item").forEach(button => {
+                button.addEventListener("click", function() {
+                    let index = this.getAttribute("data-index");
+                    removeFromCart(index);
+                });
+            });
+        }
+
+        function removeFromCart(index) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.splice(index, 1); // Remove item at index
+            localStorage.setItem("cart", JSON.stringify(cart));
+            displayCart();
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            document.getElementById("cart-count").textContent = cart.length;
+        }
+
+        document.getElementById("clearCart").addEventListener("click", function() {
+            localStorage.removeItem("cart");
+            displayCart();
+            updateCartCount();
+        });
+
+        displayCart();
+    </script>
+
+</body>
+</html>

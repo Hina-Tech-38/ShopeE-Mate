@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce Recommendation System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
+    .navbar-brand {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: none;
+    background: linear-gradient(45deg, #ff7eb3, #ff758c, #ff7eb3, #ff758c);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 8px rgba(255, 117, 140, 0.6);
+    display: inline-block;
+    text-decoration: none;
+  }
+
+  search.form-control {
+    width: 100% !important;
+    max-width: 500px !important;
+}
+
+
+  .container {
+    display: flex;
+    flex-wrap: wrap; /* Ensures wrapping on smaller screens */
+    justify-content: center; /* Centers the cards */
+    gap: 20px; /* Adds space between cards */
+}
+
+.product-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    background-color: #ADD8E6; /* Fixed background */
+    color: black; /* Fixed text color */
+    margin: 20px;
+    width: 300px;
+    min-height: 450px; /* Ensures equal card height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.product-card h3 {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.product-card p {
+    font-size: 14px;
+    color: #555;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.button-container a, .button-container button {
+    flex: 1; /* Equal width for both buttons */
+    text-align: center;
+}
+
+.view-btn {
+    display: block;
+    padding: 8px;
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.view-btn:hover {
+    background: #ff4500;
+}
+
+.add-to-cart {
+    display: inline-block;
+    background-color: white;
+    color: #007bff;
+    font-weight: bold;
+    padding: 10px 15px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.add-to-cart:hover {
+    background-color: #0000FF;
+    color: white;
+}
+
+.navbar {
+    font-style: oblique;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+        .nav-link:hover {
+            color: orange !important; /* Change text color on hover */
+        }
+        .nav-link.btn {
+            border-radius: 5px; /* Add rounded corners to buttons */
+        }
+        .navbar-brand {
+           color: #fff !important; /* Makes the ShopeE-Mate text bluish */
+           font-size: 24px;
+           font-weight: bold;
+        }
+
+        .navbar-brand:hover {
+             color: #0d6efd !important; /* Lighter blue when hovered */
+         }
+
+        .modal-content {
+            background-color: #fff; /* Set modal content background color */
+            color: #000; /* Set modal content text color */
+        }
+        .modal-content.dark {
+            background-color: #000; /* Set modal content background color for dark theme */
+            color: #fff; /* Set modal content text color for dark theme */
+        }
+
+
+</style>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg" style="background-color: black;">
+  <a class="navbar-brand mx-auto" href="#">🛒 ShopeE-Mate </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a>
+
+      </li>
+       <li class="nav-item">
+        <a class="nav-link" href="#" id="settingsLink"><i class="fas fa-cog"></i> Settings</a>
+      </li>
+         <!-- Profile-->
+      <li class="nav-item button">
+        <a class="nav-link  text-blue" href="profile">
+         <i class="fas fa-user"></i> Profile
+        </a>
+      </li>
+        <!-- Shopping Cart -->
+                <li class="nav-item">
+                    <a class="nav-link" href="cart">
+                        <i class="fas fa-shopping-cart"></i> Cart
+                        <span class="badge bg-danger" id="cart-count">0</span>
+                    </a>
+                </li>
+
+    </ul>
+  </div>
+</nav>
+
+<script>document.addEventListener("DOMContentLoaded", function () {
+    updateCartCount();
+});
+
+// Function to update cart count in the navbar
+function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    document.getElementById("cart-count").textContent = cart.length;
+}
+
+// Add to Cart Function (if not already included)
+document.querySelectorAll(".add-to-cart").forEach(button => {
+    button.addEventListener("click", function() {
+        let product = {
+            name: this.getAttribute("data-name"),
+            price: this.getAttribute("data-price"),
+            image: this.getAttribute("data-image"),
+            url: this.getAttribute("data-url")
+        };
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.push(product);
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        updateCartCount();
+        alert(product.name + " added to cart!");
+    });
+});
+</script>
+
+
+<!-- Search Bar -->
+<div class="container" style="margin-top:30px;">
+    <form id="searchForm" style="display:flex;">
+        <select class="form-control" name="niche" style="width: 150px;">
+            <option value="">All Niches</option>
+            <option value="fashion">Fashion</option>
+            <option value="electronics">Electronics</option>
+            <option value="beauty">Beauty</option>
+            <option value="fitness">Fitness</option>
+        </select>
+
+        <input type="text" class="form-control mr-2" name="prod" placeholder="Search for products..." required style="width: 500px;">
+        <input type="number" class="form-control" name="nbr" placeholder="Number of products..." style="width:100px;" required>
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+</div>
+
+
+<!-- Add an empty div to display product recommendations -->
+<div id="productResults" class="container mt-4"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    updateCartCount();
+
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent page reload
+
+        // Get search inputs
+        var product = document.querySelector('input[name="prod"]').value;
+        var number = document.querySelector('input[name="nbr"]').value;
+
+        if (product.trim() === "" || number.trim() === "") {
+            alert("Please enter a product name and number of products.");
+            return;
+        }
+
+        // Make AJAX request to fetch recommendations
+        fetch(`/search?prod=${encodeURIComponent(product)}&nbr=${encodeURIComponent(number)}`)
+        .then(response => response.json())  // Expect JSON response from backend
+        .then(data => {
+            // Display results dynamically
+            let resultsContainer = document.getElementById("productResults");
+            resultsContainer.innerHTML = ""; // Clear previous results
+
+            if (data.recommendations && data.recommendations.length > 0) {
+                data.recommendations.forEach(product => {
+                    resultsContainer.innerHTML += `
+                        <div class="product-card">
+                            <img src="${product.image}" alt="${product.name}">
+                            <h3>${product.name}</h3>
+                            <p><strong>Price:</strong> ₹${product.price}</p>
+                            <p><strong>Offer:</strong> ₹${product.offer}</p>
+                            <p><strong>Ratings:</strong> ⭐ ${product.ratings}</p>
+                            <p><strong>Platform:</strong> ${product.platform}</p>
+
+                            <!-- Button Container for Side-by-Side Layout -->
+                          <div class="button-container">
+                      <a href="${product.url}" target="_blank" class="view-btn">Buy Now</a>
+                       <button class="add-to-cart"
+                        data-name="${ product.name }"
+                        data-price="${ product.price }"
+                        data-image="${ product.image }"
+                        data-url="${product.url }">
+                     Add to Cart
+                        </button>
+                        </div>
+                      </div>
+
+                    `;
+                });
+
+                // Attach event listeners to new "Add to Cart" buttons
+                document.querySelectorAll(".add-to-cart").forEach(button => {
+                    button.addEventListener("click", function() {
+                        let product = {
+                            name: this.getAttribute("data-name"),
+                            price: this.getAttribute("data-price"),
+                            image: this.getAttribute("data-image"),
+                            url: this.getAttribute("data-url")
+                        };
+
+                        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+                        cart.push(product);
+                        localStorage.setItem("cart", JSON.stringify(cart));
+
+                        updateCartCount();
+                        alert(product.name + " added to cart!");
+                    });
+                });
+            } else {
+                resultsContainer.innerHTML = "<p>No recommendations available.</p>";
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+            alert("Failed to fetch product recommendations.");
+        });
+    });
+});
+
+// Function to update cart count in navbar
+function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    document.getElementById("cart-count").textContent = cart.length;
+}
+
+</script>
+
+<!-- to display search results -->
+<div id="searchResults" class="container mt-4">
+    <div id="productContainer" class="d-flex flex-wrap justify-content-start">
+        <!-- Product cards will be inserted here -->
+    </div>
+</div>
+
+
+
+<!-- Bootstrap modal for sign up -->
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="signupModalLabel">Sign Up</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/signup" method="post">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap modal for sign in -->
+<div class="modal fade" id="signinModal" tabindex="-1" aria-labelledby="signinModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="signinModalLabel">Sign In</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/signin" method="post">
+          <div class="mb-3">
+            <label for="signinUsername" class="form-label">Username</label>
+            <input type="text" class="form-control" id="signinUsername" name="signinUsername" required>
+          </div>
+          <div class="mb-3">
+            <label for="signinPassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="signinPassword" name="signinPassword" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h5>Choose Theme:</h5>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="theme" id="defaultTheme" value="default" checked>
+          <label class="form-check-label" for="defaultTheme">
+            Default
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="theme" id="blackTheme" value="black">
+          <label class="form-check-label" for="blackTheme">
+            Black Theme
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="theme" id="blueTheme" value="blue">
+          <label class="form-check-label" for="blueTheme">
+            Blue Theme
+          </label>
+        </div>
+        <hr>
+        <h5>Zoom:</h5>
+        <button type="button" class="btn btn-primary mr-2" id="zoomIn">Zoom In</button>
+        <button type="button" class="btn btn-primary" id="zoomOut">Zoom Out</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="applyTheme">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+ // Handle click on Settings link to open the modal
+  document.getElementById('settingsLink').addEventListener('click', function() {
+    $('#settingsModal').modal('show');
+  });
+  // Handle theme apply button click
+  document.getElementById('applyTheme').addEventListener('click', function() {
+    // Get the selected theme value
+    var selectedTheme = document.querySelector('input[name="theme"]:checked').value;
+
+    // Apply the selected theme
+    if (selectedTheme === 'black') {
+      document.body.style.backgroundColor = 'black';
+      document.body.style.color = 'white';
+    } else if (selectedTheme === 'blue') {
+      document.body.style.backgroundColor = 'blue';
+      document.body.style.color = 'white';
+    } else {
+      // Default theme
+      document.body.style.backgroundColor = '#f8f9fa';
+      document.body.style.color = 'black';
+    }
+
+    // Close the modal
+    $('#settingsModal').modal('hide');
+  });
+
+  // Handle zoom in button click
+  document.getElementById('zoomIn').addEventListener('click', function() {
+    document.body.style.zoom = "115%";
+  });
+
+  // Handle zoom out button click
+  document.getElementById('zoomOut').addEventListener('click', function() {
+    document.body.style.zoom = "100%";
+  });
+</script>
+
+
+<h1></h1>
+
+    {% if recommendations %}
+        {% for product in recommendations %}
+            <div class="product-card">
+                <img src="{{ product.image }}" alt="{{ product.name }}">
+                <h3>{{ product.name }}</h3>
+                <p><strong>price:</strong> ₹{{ product.price }}</p>
+                <p><strong>offer:</strong> ₹{{ product.offer }}</p>
+                <p><strong>ratings:</strong> ⭐ {{ product.ratings }}</p>
+                <p><strong>platform:</strong> {{ product.platform }}</p>
+                <!-- Button Container for Side-by-Side Layout -->
+              <div class="button-container">
+                  <a href="{{ product.url }}" target="_blank" class="buy-now-btn">Buy Now</a>
+                <button class="add-to-cart"
+                        data-name="{{ product.name }}"
+                        data-price="{{ product.price }}"
+                        data-image="{{ product.image }}"
+                        data-url="{{ product.url }}">
+                     Add to Cart
+                </button>
+            </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No recommendations available.{search for it}</p>
+    {% endif %}
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="feedbackModalLabel">Rate Our Recommendation System</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="feedbackForm">
+          <label for="rating">Rate Us:</label>
+          <select class="form-control" id="rating" required>
+            <option value="">Select Rating</option>
+            <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
+            <option value="4">⭐⭐⭐⭐ (Good)</option>
+            <option value="3">⭐⭐⭐ (Average)</option>
+            <option value="2">⭐⭐ (Poor)</option>
+            <option value="1">⭐ (Very Bad)</option>
+          </select>
+
+          <label for="comments" class="mt-2">Comments:</label>
+          <textarea class="form-control" id="comments" rows="3" placeholder="Write your feedback..."></textarea>
+
+          <button type="submit" class="btn btn-primary mt-3">Submit Feedback</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    var product = document.querySelector('input[name="prod"]').value;
+    var number = document.querySelector('input[name="nbr"]').value;
+
+    fetch(`/search?prod=${encodeURIComponent(product)}&nbr=${encodeURIComponent(number)}`)
+    .then(response => response.json())
+    .then(data => {
+        let resultsContainer = document.getElementById("productResults");
+        resultsContainer.innerHTML = "";
+
+        if (data.recommendations && data.recommendations.length > 0) {
+            data.recommendations.forEach(product => {
+                resultsContainer.innerHTML += `
+                    <div class="product-card">
+                        <img src="${product.image}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p><strong>Price:</strong> ₹${product.price}</p>
+                        <p><strong>Ratings:</strong> ⭐ ${product.ratings}</p>
+                        <p><strong>Platform:</strong> ${product.platform}</p>
+                        <div class="button-container">
+                            <a href="${product.url}" target="_blank" class="view-btn">Buy Now</a>
+                            <button class="add-to-cart" data-name="${product.name}" data-price="${product.price}" data-image="${product.image}" data-url="${product.url}">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Wait 5 seconds before showing the feedback modal
+            setTimeout(function() {
+                $('#feedbackModal').modal('show');
+            }, 5000);
+        } else {
+            resultsContainer.innerHTML = "<p>No recommendations available.</p>";
+        }
+    })
+    .catch(error => {
+        console.error("Error fetching data:", error);
+        alert("Failed to fetch product recommendations.");
+    });
+});
+
+</script>
+
+{% for product in products %}
+<div onclick='handleProductClick({
+    name: "{{ product.name|escape }}",
+    image: "{{ product.image_url }}",
+    product_url: "{{ product.product_url }}",
+    discounted_price: "{{ product.discounted_price }}"
+})' style="cursor:pointer; border: 1px solid #ddd; border-radius: 10px; padding: 10px; width: 200px; margin: 10px;">
+    <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width: 100%; height: 150px; object-fit: cover;">
+    <h4>{{ product.name }}</h4>
+    <p>₹{{ product.discounted_price }}</p>
+    <a href="{{ product.product_url }}" class="btn btn-primary">View</a>
+</div>
+{% endfor %}
+
+<!-- Product Search Results -->
+<div style="display: flex; flex-wrap: wrap; gap: 20px;">
+  {% for product in products %}
+    <div onclick='handleProductClick({
+    name: "{{ product.name|escape }}",
+    image: "{{ product.image_url }}",
+    product_url: "{{ product.product_url }}",
+    discounted_price: "{{ product.discounted_price }}",
+    product_id: "{{ product.id }}"
+    })' style="cursor:pointer; border: 1px solid #ddd; border-radius: 10px; padding: 10px; width: 200px;">
+      <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width: 100%; height: 150px; object-fit: cover;">
+      <h4>{{ product.name }}</h4>
+      <p>₹{{ product.price }}</p>
+      <a href="{{ product.url }}" class="btn btn-primary">View</a>
+    </div>
+  {% endfor %}
+</div>
+
+
+<!-- Users Also Liked Section -->
+
+<div id="userLikedSection" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+  <!-- JavaScript will inject cards here -->
+</div>
+
+<script>
+fetch('/track_click', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        user_id: localStorage.getItem('user_id') || 1,
+        product_id: product.product_id
+    })
+});
+</script>
+
+<script>
+  function saveClickedProduct(product) {
+    let liked = JSON.parse(localStorage.getItem('userLiked')) || [];
+
+    if (!liked.find(p => p.name === product.name)) {
+      liked.unshift(product);
+    }
+
+    liked = liked.slice(0, 5);
+    localStorage.setItem('userLiked', JSON.stringify(liked));
+  }
+
+  function handleProductClick(product) {
+    // Save to localStorage
+    saveClickedProduct(product);
+
+    // Send click to backend
+    fetch('/track_click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            product_id: product.product_id,
+            user_id: localStorage.getItem('user_id') || 1  // Update to dynamic user session if possible
+        })
+    }).then(response => {
+        // Optional: log response
+        if (!response.ok) {
+          console.error("Failed to track click");
+        }
+    });
+
+    // Redirect to product page
+    window.location.href = product.product_url;
+  }
+
+  function showUserLikedProducts() {
+    const liked = JSON.parse(localStorage.getItem('userLiked')) || [];
+    const section = document.getElementById('userLikedSection');
+    section.innerHTML = '';
+
+    if (liked.length === 0) {
+      section.innerHTML = "<p style='color: gray;'>No products liked yet.</p>";
+      return;
+    }
+
+    liked.forEach(product => {
+      const card = `
+        <div style="border: 1px solid #ddd; border-radius: 10px; padding: 10px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+          <img src="${product.image}" alt="${product.name}" style="width: 100%; height: 160px; object-fit: contain; border-bottom: 1px solid #eee; margin-bottom: 10px;">
+          <p style="font-weight: 500; font-size: 14px; height: 40px; overflow: hidden;">${product.name}</p>
+          <p style="color: green; font-size: 14px; font-weight: bold;">₹${product.discounted_price}</p>
+          <a href="${product.product_url}" class="btn btn-sm btn-primary mt-2" style="font-size: 12px;">View</a>
+        </div>
+      `;
+      section.innerHTML += card;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", showUserLikedProducts);
+</script>
+
+<script>
+    localStorage.setItem('user_id', "{{ session['id'] }}");
+</script>
+
+<!-- Similar Users Also Liked -->
+<h2 class="text-center my-4">-</h2>
+<div class="container">
+  <div class="row">
+    {% for product in products %}
+    <div class="col-md-3 mb-4">
+      <div class="card h-100 shadow-sm">
+        <img src="{{ product.image }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ product.name }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text">Brand: {{ product.brand }}</p>
+          <a href="#" class="btn btn-primary btn-sm">View Product</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!--similar 4  recommendations-->
+<!-- Products -->
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Similar Users Also Liked</h2>
+    <div class="row mt-4">
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card" style="background-color: #f8f9fa; border: 1px solid #007bff; border-radius: 10px; transition: transform 0.2s;">
+                <img src="{{ url_for('static', filename='sample1.jpeg') }}" class="card-img-top" alt="Product 1" style="height: 200px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                <div class="card-body">
+                    <h5 class="card-title" title="Product 1" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #007bff;">Product 1</h5>
+                    <p class="card-text" style="font-family: 'Verdana', sans-serif; color: #333;">Brand: ReNee </p>
+                    <a href="https://www.amazon.in/RENEE-Prime-Matte-Lipstick-Long-Lasting/dp/B0DL6G5BSK/ref=sr_1_6?crid=3CSQIX7E9IRNC&dib=eyJ2IjoiMSJ9.i63POW5r4qwGBpzNIpXpo7MW1C56sey7xPi-5ukEJ6x_gBh-4wukfbQFEjlq0zSHjCvzpwSE6ZI74fi_a65hN_XAtM0eQnvHkpS7uKX8yzzLX8q4-4DtyQobN_Muiz3E4yimH-dSe4hvQKiQxqecvFGVdcu3Ff_pAeIAmeGvsL8aronXVDUwGMDh44LzG41XPxnThemyKPgT55F8VF8UCsIt2ZX7Hp2XTYszKhwBvAWu3GP5pmX1alIwTaJRzNYrg4fCIWsOl3MACJzCmxbv64JjQzFf9y_Vf5-z4PUfGqs.s4cer2dRP6JCtOQyYs4n7QeK75o3SSKLGWuBgqm12kE&dib_tag=se&keywords=LIPSTICK%2Brenee%2Bbullet&nsdOptOutParam=true&qid=1744289887&s=beauty&sprefix=lipstick%2Brenee%2Bbullet%2Cbeauty%2C306&sr=1-6&th=1" class="btn btn-primary" target="_blank" style="background-color: #007bff; border: none;">Buy Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card" style="background-color: #f8f9fa; border: 1px solid #007bff; border-radius: 10px; transition: transform 0.2s;">
+                <img src="{{ url_for('static', filename='smaple2.png') }}" class="card-img-top" alt="Product 2" style="height: 200px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                <div class="card-body">
+                    <h5 class="card-title" title="Product 2" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #007bff;">Product 2</h5>
+                    <p class="card-text" style="font-family: 'Verdana', sans-serif; color: #333;">Brand: Redmi</p>
+                    <a href="https://www.amazon.in/Redmi-Orchid-Largest-Display-Segment/dp/B0D78W2HF5/ref=sr_1_5?crid=2DG18ZPVZWLHD&dib=eyJ2IjoiMSJ9.9IBB_isGGyZC9Lu9nc-Dq6vWk9RTcdbEdChkR3mzP2K43DPzZd3Lch394Pq32XFy6GC-LilTpicnqzsVb30o7thqBHzldeUCTfLt1h7JUCq3GOWdGnT4XV-oLaGsNSsKfWFXMlssP_5t67n4kUoGGUpWmxBOtKkkupZSkGEic7ucim5ufGOt9zC-8c28AmDrouZAYczt3D4Yro8GPbn5qBH0c3vH5RLjJPr5X2OBHGA.VDuIxyjK2QBEp-rk-gaW37SRA4Ut2RhwZBlRwRzrsGc&dib_tag=se&keywords=redmi+13&qid=1744220191&sprefix=redmi+13%2Caps%2C213&sr=8-5" class="btn btn-primary" target="_blank" style="background-color: #007bff; border: none;">Buy Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card" style="background-color: #f8f9fa; border: 1px solid #007bff; border-radius: 10px; transition: transform 0.2s;">
+                <img src="{{ url_for('static', filename='sample3.jpg') }}" class="card-img-top" alt="Product 3" style="height: 200px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                <div class="card-body">
+                    <h5 class="card-title" title="Product 3" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #007bff;">Product 3</h5>
+                    <p class="card-text" style="font-family: 'Verdana', sans-serif; color: #333;">Brand: Everyday</p>
+                    <a href="https://www.amazon.in/M-Weft-Slim-Multi-Coloured-Jeans-Pack/dp/B08GCWLMVJ/ref=sr_1_18?dib=eyJ2IjoiMSJ9.a5uiephj3Xg2XXz3-r3B9hvWyV33-EbP1d3cKtpMsEwB70MS_77iBsKsipzdAN8X0_DJreSdN6A-sjRFtav6hPj7_Vlgzt6sgWTuoZlx7P8DRhFkqgMHlknbsueTKTIDheTpQU9zxDy7TW1Lkg3WG3gABNom-qG2JPEyhOwIAEiJz6sTwmyzHj5_w9dNndGxf9rbknPiGkQMRlaH4VH2Y82fwKulMIvhjqajXqrq1q9Ayo2BADTyNhKKWpxI1aKfSv0qjOE_7IozYM2QWrBeNyDZT6pQdJWyJxmnOUm2dEk.NXcbrbg3s1vzzhEnkZsQ9uWjE6u5O1gsE4KmV_x1VE8&dib_tag=se&keywords=combo%2Bjeans&qid=1744220157&sr=8-18&th=1&psc=1" class="btn btn-primary" target="_blank" style="background-color: #007bff; border: none;">Buy Now</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card" style="background-color: #f8f9fa; border: 1px solid #007bff; border-radius: 10px; transition: transform 0.2s;">
+                <img src="{{ url_for('static', filename='sample4.jpg') }}" class="card-img-top" alt="Product 4" style="height: 200px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                <div class="card-body">
+                    <h5 class="card-title" title="Product 4" style="font-family: 'Arial', sans-serif; font-weight: bold; color: #007bff;">Product 4</h5>
+                    <p class="card-text" style="font-family: 'Verdana', sans-serif; color: #333;">Brand: BoAt</p>
+                    <a href="https://www.amazon.in/boAt-Rockerz-480-Bluetooth-Headphones/dp/B0DGTSRX3R/ref=sr_1_3?crid=3LPI1EGN2W930&dib=eyJ2IjoiMSJ9.4geUvRJItTZm4T6QPsAbCTDT-FOZg_59XGIsypidDl1K5A6yHfo7IOQRQdbdiB5Q92GL0SIGpghAKy7CZwkSMA2N8VIL9KHxmCoD5Ph1Z7so3Ev4XM5iQkHdtrl1bjuya2SktO6P9W0wpcyI5soU8q6j8JyKyKUX1CuCDWYq4rbnwpPiLVTaXnZiLwbZG3cOCkINpB-RF1eKs9Ctv9wRMUTOdJG3vn0grTpvxh2ojWk.McoZ64PCb0CCQnurHQ-kKMn2CPHgHwd_CFVL__s7aEI&dib_tag=se&keywords=boat%2Bheadphone&nsdOptOutParam=true&qid=1744220225&sprefix=baot%2Bhead%2Caps%2C236&sr=8-3&th=1" class="btn btn-primary" target="_blank" style="background-color: #007bff; border: none;">Buy Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Footer -->
+<footer class="footer bg-dark text-white mt-5">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<div class="container py-4" style="margin-top:300px;">
+    <div class="row">
+        <div class="col-md-3">
+            <h5>About Us</h5>
+            <p>ShopeE-Mate helps you find the best deals from Amazon, Flipkart, and JioMart.</p>
+        </div>
+        <div class="col-md-3">
+            <h5>Quick Links</h5>
+            <ul class="list-unstyled">
+                <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> Home</a></li>
+                <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> About</a></li>
+                <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> Services</a></li>
+                <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> Contact</a></li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <h5>Support</h5>
+            <ul class="list-unstyled">
+                <li><a href="#" class="text-white"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                <li><a href="#" class="text-white"><i class="fas fa-file-alt"></i> Terms of Service</a></li>
+                <li><a href="#" class="text-white"><i class="fas fa-shield-alt"></i> Privacy Policy</a></li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <h5>Follow Us</h5>
+            <div>
+            <a href="#" class="text-white mx-2"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </div>
+    <hr class="bg-light">
+    <div class="text-center">
+        <p>© 2024-25 ShopeE-Mate. All Rights Reserved.</p>
+    </div>
+</div>
+</footer>
+
+
+
+</body>
+
+</html>

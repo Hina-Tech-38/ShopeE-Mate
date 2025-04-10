@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopeE-Mate</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
+    .navbar-brand {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: none;
+    background: linear-gradient(45deg, #ff7eb3, #ff758c, #ff7eb3, #ff758c);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 8px rgba(255, 117, 140, 0.6);
+    display: inline-block;
+    text-decoration: none;
+  }
+
+.navbar-brand {
+           color: #fff !important; /* Makes the ShopeE-Mate text bluish */
+           font-size: 24px;
+           font-weight: bold;
+        }
+
+        .navbar-brand:hover {
+             color: #0d6efd !important; /* Lighter blue when hovered */
+         }
+
+        /* Full-screen video background */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            color: white;
+            text-align: center;
+            padding-top: 20vh;
+        }
+		.content h1 {
+            font-weight: bold;   /* Make it bold */
+            color: white;        /* White text */
+            font-size: 2.5rem;     /* Adjust size as needed */
+        }
+
+        .content p {
+            font-weight: bold;   /* Make it bold */
+            color: white;        /* White text */
+            font-size: 1 rem;   /* Adjust size as needed */
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+         .btn-custom {
+            background-color: white;   /* Default White Background */
+            color: black;              /* Black Text */
+            border: 2px solid black;   /* Black Border */
+            padding: 10px 20px;        /* Padding for better size */
+            font-size: 16px;           /* Font Size */
+            cursor: pointer;           /* Pointer Cursor */
+            transition: all 0.3s ease-in-out; /* Smooth Transition */
+        }
+
+         .btn-custom:hover {
+             background-color: #00008B;  /* Blue Background on Hover */
+             color: white;            /* White Text on Hover */
+             border-color: blue;      /* Blue Border on Hover */
+        }
+
+
+        .modal-content {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        border-radius: 12px;
+        color: white;
+    }
+    .modal-header {
+        border-bottom: none;
+        text-align: center;
+    }
+    .modal-title {
+        font-weight: bold;
+        font-size: 1.8rem;
+        width: 100%;
+    }
+    .form-control {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+    }
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.3);
+        outline: none;
+    }
+    .btn-primary {
+        background: linear-gradient(45deg, #6a11cb, #2575fc);
+        border: none;
+    }
+    .btn-social {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        font-weight: bold;
+        border-radius: 6px;
+    }
+    .btn-google {
+        background: white;
+        color: black;
+    }
+    .btn-apple {
+        background: black;
+        color: white;
+    }
+    .toggle-password {
+        cursor: pointer;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+    }
+        /* Glassmorphism Effect for Modals */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 20px;
+}
+.alert {
+        max-width: 400px;
+        padding: 20px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 10px;
+        margin-left: 900px; /* Adjust the value as needed */
+        margin-bottom: 300px; /* Adjust the value as needed */
+    }
+
+    </style>
+
+</head>
+<body>
+    <!-- Background Video -->
+    <video class="video-bg" autoplay loop muted>
+        <source src="static/vid_ai.mp4" type="video/mp4">
+
+        Your browser does not support the video tag.
+    </video>
+
+
+
+    <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand mx-auto" href="#">🛒 ShopeE-Mate</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+
+            <ul class="navbar-nav ms-auto">
+                <!-- Dropdown for Sign Up / Sign In -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle fw-bold bg-black text-white px-3 py-2 rounded" href="#" id="authDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Sign In / Sign Up
+</a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#signinModal">
+                                <i class="fas fa-sign-in-alt"></i> Sign In
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#signupModal">
+                                <i class="fas fa-user-plus"></i> Sign Up
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Shopping Cart -->
+                <li class="nav-item">
+                    <a class="nav-link" href="cart">
+                        <i class="fas fa-shopping-cart"></i> Cart
+                        <span class="badge bg-danger" id="cart-count">0</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Sign In Modal -->
+<div class="modal fade" id="signinModal" tabindex="-1" aria-labelledby="signinModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass-effect">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signinModalLabel">Sign In</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/signin" method="post">
+                    <div class="mb-3">
+                        <label for="signinUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="signinUsername" name="signinUsername" required>
+                    </div>
+                    <div class="mb-3">
+                        <label  for="signinPassword" class="form-label">Password</label>
+                        <div class="input-group">
+                           <input type="password" class="form-control" id="signin-password" name="loginPassword" required>
+                          <button class="btn btn-outline-secondary toggle-password" data-target="signin-password" type="button">
+                         <i class="fas fa-eye"></i>
+                          </button>
+
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                    <p class="mt-3">Don't have an account? <a href="index" style="color: #6610f2;">Sign Up</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Sign Up Modal -->
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content glass-effect">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signupModalLabel">Sign Up</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Flash message display -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form id="signupForm" action="/signup" method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="signup-password" name="password" required>
+                        <button class="btn btn-outline-secondary toggle-password" data-target="signup-password" type="button">
+                        <i class="fas fa-eye"></i>
+                        </button>
+
+                        </div>
+                    </div>
+                    <!-- Profile Picture -->
+                    <div class="mb-3">
+                        <label for="profilepicture" class="form-label">Profile Picture</label>
+                        <input type="file" class="form-control" id="profilepicture" name="profilepicture" accept="image/*">
+                    </div>
+                    <!-- Preferences -->
+                    <div class="mb-3">
+                        <label for="preferences" class="form-label">Preferences</label>
+                        <textarea class="form-control" id="preferences" name="preferences" rows="2" placeholder="Enter your preferences..."></textarea>
+                    </div>
+                    <!-- Bio -->
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">Bio</label>
+                        <textarea class="form-control" id="bio" name="bio" rows="3" placeholder="Tell us about yourself..."></textarea>
+                    </div>
+                    <!-- Socials -->
+                    <div class="mb-3">
+                        <label for="socials" class="form-label">Social Profiles</label>
+                        <input type="text" class="form-control" id="socials" name="socials" placeholder="Enter your social media links">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Password toggle functionality
+   document.querySelectorAll(".toggle-password").forEach(button => {
+    button.addEventListener("click", function () {
+        let targetId = this.getAttribute("data-target");
+        let passwordField = document.getElementById(targetId);
+        if (passwordField) {
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                passwordField.type = "password";
+                this.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        }
+    });
+});
+
+</script>
+
+
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1>Welcome to ShopeE-Mate</h1>
+        <p>Discover the best products across multiple platforms!</p>
+        <div class="btn-container">
+            <a href="main" class="btn btn-custom btn-lg">Go To Main Page</a>
+            <a href="index2" class="btn btn-custom btn-lg">Click for Trending Items</a>
+        </div>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Flash Messages -->
+<div id="flash-container" class="position-fixed top-50 start-50 translate-middle text-center" style="z-index: 1050;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} fade show shadow-lg" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<!-- JavaScript to Auto-Dismiss Messages -->
+<script>
+    setTimeout(function () {
+        let alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            alert.style.transition = "opacity 0.5s ease";
+            alert.style.opacity = "0";
+            setTimeout(() => alert.remove(), 500); // Removes element after fade-out
+        });
+    }, 2000); // 2 seconds
+</script>
+
+
+<!--footer-->
+<footer class="footer bg-dark text-white mt-5">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <div class="container py-4" style="margin-top:140px;">
+        <div class="row">
+            <div class="col-md-3">
+                <h5>About Us</h5>
+                <p>ShopeE-Mate helps you find the best deals from Amazon, Flipkart, and JioMart.</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> Home</a></li>
+                    <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> About</a></li>
+                    <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> Services</a></li>
+                    <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Support</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                    <li><a href="#" class="text-white"><i class="fas fa-file-alt"></i> Terms of Service</a></li>
+                    <li><a href="#" class="text-white"><i class="fas fa-shield-alt"></i> Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Follow Us</h5>
+				<!-- FontAwesome (Include this in <head>) -->
+            <div>
+            <a href="#" class="text-white mx-2"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
+    <a href="#" class="text-white mx-2"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+
+            </div>
+        </div>
+        <hr class="bg-light">
+        <div class="text-center">
+            <p>© 2024-25 ShopeE-Mate. All Rights Reserved.</p>
+        </div>
+    </div>
+
+
+</footer>
+
+</body>
+</html>

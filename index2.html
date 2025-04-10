@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce Recommendation System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
+    .navbar-brand {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: none;
+    background: linear-gradient(45deg, #ff7eb3, #ff758c, #ff7eb3, #ff758c);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 8px rgba(255, 117, 140, 0.6);
+    display: inline-block;
+    text-decoration: none;
+  }
+        /* Global Styles */
+        body {
+            background-image: url('C:\Users\LENOVO\PycharmProjects\ShopeE-Mate\static\background.jpg'); /* Replace with your image URL */
+            background-size: cover; /* Cover the entire screen */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Prevent repeating */
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        /* Sliding & Floating H1 Animation */
+        @keyframes slideIn {
+            0% { transform: translateX(-100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes floatUpDown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+            color: #dc3545;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            animation: slideIn 1.5s ease-out, floatUpDown 3s infinite ease-in-out;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .header-container {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff6600;
+            display: inline-block;
+            animation: slideIn 1.5s ease-out, floatUpDown 3s infinite ease-in-out 1.5s;
+        }
+
+        {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .product-card {
+           background-color: #ADD8E6; /* Keep card background fixed */
+           color: black; /* Keep card text color fixed */
+           border-radius: 8px;
+           box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+           padding: 15px;
+           width: 300px;
+           margin: 15px;
+           text-align: center;
+        }
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .price {
+            font-size: 16px;
+            color: #28a745;
+            font-weight: bold;
+        }
+        .platform {
+            font-size: 14px;
+            color: #555;
+        }
+        .buy-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .buy-btn:hover {
+            background: #ff4500;
+        }
+
+        .add-to-cart {
+    display: inline-block;
+    background-color: white; /* White background */
+    color: #007bff; /*  text (same as Buy Now) */
+    font-weight: bold;
+    padding: 10px 15px;
+    border: 2px solid #007bff; /*  border */
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.add-to-cart:hover {
+    background-color: #0000FF; /*  hover */
+    color: white; /* White text on hover */
+}
+        .navbar {
+            font-style: oblique;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+           color: #fff !important; /* Makes the ShopeE-Mate text bluish */
+           font-size: 24px;
+           font-weight: bold;
+        }
+
+        .navbar-brand:hover {
+             color: #0d6efd !important; /* Lighter blue when hovered */
+         }
+        .container {
+            margin-top: 50px;
+        }
+        .nav-link:hover {
+            color: orange !important; /* Change text color on hover */
+        }
+        .nav-link.btn {
+            border-radius: 5px; /* Add rounded corners to buttons */
+        }
+        .modal-content {
+            background-color: #fff; /* Set modal content background color */
+            color: #000; /* Set modal content text color */
+        }
+        .modal-content.dark {
+            background-color: #000; /* Set modal content background color for dark theme */
+            color: #fff; /* Set modal content text color for dark theme */
+        }
+
+</style>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg" style="background-color: black;">
+  <a class="navbar-brand mx-auto" href="#">🛒 ShopeE-Mate</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a>
+
+      </li>
+       <li class="nav-item">
+        <a class="nav-link" href="#" id="settingsLink"><i class="fas fa-cog"></i> Settings</a>
+      </li>
+        <!-- Profile-->
+      <li class="nav-item button">
+        <a class="nav-link  text-blue" href="profile">
+         <i class="fas fa-user"></i> Profile
+        </a>
+      </li>
+        <!-- Shopping Cart -->
+                <li class="nav-item">
+                    <a class="nav-link" href="cart">
+                        <i class="fas fa-shopping-cart"></i> Cart
+                        <span class="badge bg-danger" id="cart-count">0</span>
+                    </a>
+                </li>
+    </ul>
+  </div>
+</nav>
+
+<header>
+        <h1 style="text-align: center; padding: 20px; color: #FF0000">Amazon ,Flipkart ,Jiomart Top Products 🔥</h1>
+    </header>
+
+    <div class="container">
+    {% for product in trending %}
+        <div class="product-card">
+            <img src="{{ product['Image'] }}" alt="Image">
+            <div class="product">{{ product['product'] }}</div>
+            <div class="price">₹{{ product['price'] }}</div>
+            <div class="ratings">Ratings: {{ product['ratings'] }}</div>
+            <div class="platform">Platform: {{ product['platform'] }}</div>
+            <a href="{{ product['URL']| safe }}" target="_blank" class="buy-btn">Buy Now</a>
+            <button class="add-to-cart"
+                data-name="{{ product['product'] }}"
+                data-price="{{ product['price'] }}"
+                data-image="{{ product['Image'] }}"
+                data-url="{{ product['URL']| safe }}">
+                Add to Cart
+            </button>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        function updateCartCount() {
+            document.getElementById("cart-count").textContent = cart.length;
+        }
+
+        document.querySelectorAll(".add-to-cart").forEach(button => {
+            button.addEventListener("click", function() {
+                let product = {
+                    name: this.getAttribute("data-name"),
+                    price: this.getAttribute("data-price"),
+                    image: this.getAttribute("data-image"),
+                    url: this.getAttribute("data-url")
+                };
+
+                cart.push(product);
+                localStorage.setItem("cart", JSON.stringify(cart));
+                updateCartCount();
+                alert(`${product.name} added to cart!`);
+            });
+        });
+
+        updateCartCount();
+    });
+</script>
+
+
+
+<!-- Bootstrap modal for sign up -->
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="signupModalLabel">Sign Up</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/signup" method="post">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap modal for sign in -->
+<div class="modal fade" id="signinModal" tabindex="-1" aria-labelledby="signinModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="signinModalLabel">Sign In</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/signin" method="post">
+          <div class="mb-3">
+            <label for="signinUsername" class="form-label">Username</label>
+            <input type="text" class="form-control" id="signinUsername" name="signinUsername" required>
+          </div>
+          <div class="mb-3">
+            <label for="signinPassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="signinPassword" name="signinPassword" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h5>Choose Theme:</h5>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="theme" id="defaultTheme" value="default" checked>
+          <label class="form-check-label" for="defaultTheme">
+            Default
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="theme" id="blackTheme" value="black">
+          <label class="form-check-label" for="blackTheme">
+            Black Theme
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="theme" id="blueTheme" value="blue">
+          <label class="form-check-label" for="blueTheme">
+            Blue Theme
+          </label>
+        </div>
+        <hr>
+        <h5>Zoom:</h5>
+        <button type="button" class="btn btn-primary mr-2" id="zoomIn">Zoom In</button>
+        <button type="button" class="btn btn-primary" id="zoomOut">Zoom Out</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="applyTheme">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+ // Handle click on Settings link to open the modal
+  document.getElementById('settingsLink').addEventListener('click', function() {
+    $('#settingsModal').modal('show');
+  });
+  // Handle theme apply button click
+  document.getElementById('applyTheme').addEventListener('click', function() {
+    // Get the selected theme value
+    var selectedTheme = document.querySelector('input[name="theme"]:checked').value;
+
+    // Apply the selected theme
+    if (selectedTheme === 'black') {
+      document.body.style.backgroundColor = 'black';
+      document.body.style.color = 'white';
+    } else if (selectedTheme === 'blue') {
+      document.body.style.backgroundColor = 'blue';
+      document.body.style.color = 'white';
+    } else {
+      // Default theme
+      document.body.style.backgroundColor = '#f8f9fa';
+      document.body.style.color = 'black';
+    }
+
+    // Close the modal
+    $('#settingsModal').modal('hide');
+  });
+
+  // Handle zoom in button click
+  document.getElementById('zoomIn').addEventListener('click', function() {
+    document.body.style.zoom = "115%";
+  });
+
+  // Handle zoom out button click
+  document.getElementById('zoomOut').addEventListener('click', function() {
+    document.body.style.zoom = "100%";
+  });
+</script>
+
+<!-- Users Also Liked Section -->
+<h2 class="mt-5 mb-3">Similar Users Also Liked</h2>
+<div id="userLikedSection" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+  <!-- JavaScript will inject cards here -->
+</div>
+
+<script>
+fetch('/track_click', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        user_id: localStorage.getItem('user_id') || 1,
+        product_id: product.product_id
+    })
+});
+</script>
+
+<script>
+  function saveClickedProduct(product) {
+    let liked = JSON.parse(localStorage.getItem('userLiked')) || [];
+
+    if (!liked.find(p => p.name === product.name)) {
+      liked.unshift(product);
+    }
+
+    liked = liked.slice(0, 5);
+    localStorage.setItem('userLiked', JSON.stringify(liked));
+  }
+
+  function handleProductClick(product) {
+    // Save to localStorage
+    saveClickedProduct(product);
+
+    // Send click to backend
+    fetch('/track_click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            product_id: product.product_id,
+            user_id: localStorage.getItem('user_id') || 1  // Update to dynamic user session if possible
+        })
+    }).then(response => {
+        // Optional: log response
+        if (!response.ok) {
+          console.error("Failed to track click");
+        }
+    });
+
+    // Redirect to product page
+    window.location.href = product.product_url;
+  }
+
+  function showUserLikedProducts() {
+    const liked = JSON.parse(localStorage.getItem('userLiked')) || [];
+    const section = document.getElementById('userLikedSection');
+    section.innerHTML = '';
+
+    if (liked.length === 0) {
+      section.innerHTML = "<p style='color: gray;'>No products liked yet.</p>";
+      return;
+    }
+
+    liked.forEach(product => {
+      const card = `
+        <div style="border: 1px solid #ddd; border-radius: 10px; padding: 10px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+          <img src="${product.image}" alt="${product.name}" style="width: 100%; height: 160px; object-fit: contain; border-bottom: 1px solid #eee; margin-bottom: 10px;">
+          <p style="font-weight: 500; font-size: 14px; height: 40px; overflow: hidden;">${product.name}</p>
+          <p style="color: green; font-size: 14px; font-weight: bold;">₹${product.discounted_price}</p>
+          <a href="${product.product_url}" class="btn btn-sm btn-primary mt-2" style="font-size: 12px;">View</a>
+        </div>
+      `;
+      section.innerHTML += card;
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", showUserLikedProducts);
+</script>
+
+<script>
+    localStorage.setItem('user_id', "{{ session['id'] }}");
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!--footer-->
+<footer class="footer bg-dark text-white mt-5">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <div class="container py-4" style="margin-top:300px;">
+        <div class="row">
+            <div class="col-md-3">
+                <h5>About Us</h5>
+                <p>ShopeE-Mate helps you find the best deals from Amazon, Flipkart, and JioMart.</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> Home</a></li>
+                    <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> About</a></li>
+                    <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> Services</a></li>
+                    <li><a href="#" class="text-white"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Support</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-white"><i class="fas fa-question-circle"></i> FAQ</a></li>
+                    <li><a href="#" class="text-white"><i class="fas fa-file-alt"></i> Terms of Service</a></li>
+                    <li><a href="#" class="text-white"><i class="fas fa-shield-alt"></i> Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Follow Us</h5>
+				<!-- FontAwesome (Include this in <head>) -->
+            <div>
+            <a href="#" class="text-white mx-2"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
+    <a href="#" class="text-white mx-2"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+
+            </div>
+        </div>
+        <hr class="bg-light">
+        <div class="text-center">
+            <p>© 2024-25 ShopeE-Mate. All Rights Reserved.</p>
+        </div>
+    </div>
+
+
+</footer>
+
+
+
+</body>
+</html>

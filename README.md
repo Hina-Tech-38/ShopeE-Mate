@@ -10,5 +10,5 @@ By removing the need to go between several e-commerce sites, this solution not o
 >  ![Dashboard Screenshot](./recommendation_page.png)
 >  ![Dashboard Screenshot](./rating_.png)
 >  ![Dashboard Screenshot](./crawling_to_site_Price_analysis.png)
-> ![Dashboard Screenshot](./trending page.png)
+> ![Dashboard Screenshot](./trendingpage.png)
 > ![Dashboard Screenshot](./add_to_card.png)

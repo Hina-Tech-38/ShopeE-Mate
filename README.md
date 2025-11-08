@@ -5,3 +5,10 @@ Additionally, ShopeE-Mate integrates category-wise analysis, flash messaging for
 
 By removing the need to go between several e-commerce sites, this solution not only saves customers time but also assists them in making well-informed purchasing selections. ShopeE-Mate serves as an example of how data science, automation, and web development may be used to solve practical issues with effective, AI-powered solutions.
 
+
+![Dashboard Screenshot](./landing-page.png)
+>  ![Dashboard Screenshot](./recommendation_page.png)
+>  ![Dashboard Screenshot](./rating_.png)
+>  ![Dashboard Screenshot](./crawling_to_site_Price_analysis.png)
+> ![Dashboard Screenshot](./trending page.png)
+> ![Dashboard Screenshot](./add_to_card.png)
